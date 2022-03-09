@@ -1,10 +1,13 @@
 import Error "mo:base/Error";
+import Http "types/http";
 import Hash "mo:base/Hash";
 import HashMap "mo:base/HashMap";
 import Nat "mo:base/Nat";
 import Option "mo:base/Option";
 import Principal "mo:base/Principal";
 import Array "mo:base/Array";
+import Blob "mo:base/Blob";
+import Text "mo:base/Text";
 import Iter "mo:base/Iter";
 import T "dip721_types";
 
@@ -120,7 +123,50 @@ actor class DRC721(_name : Text, _symbol : Text) {
         return tokenPk;
     };
 
+///////////////////////////////////////////////////////////////
 
+    //////////
+    // HTTP //
+    //////////
+
+
+
+    public query func http_request(request : Http.Request) : async Http.Response {
+        let iterator = Text.split(request.url, #text("tokenid="));
+        let array = Iter.toArray(iterator);
+        let token_identifier = array[array.size() - 1];
+//        if (tokenURIs.get(token_identifier) == null) {
+//            {body = Blob.fromArray([0]); headers = [("Content-Type", "text/html; charset=UTF-8")];  streaming_strategy = null; status_code = 404;}
+//        } else {
+              {body = (Text.encodeUtf8("testing")); headers = [("Content-Type", "text/html; charset=UTF-8")]; streaming_strategy = null; status_code = 200;}
+//        };
+        //switch(tokenURIs.get(tokenId)){
+        //    case(null) {{body = Blob.fromArray([0]); headers = [("Content-Type", "text/html; charset=UTF-8")];  streaming_strategy = null; status_code = 404;}};
+        //    case(?#Material(name)) {_streamStaticAsset(name)};
+        //    case(?#LegendaryAccessory(legendary)) {_streamStaticAsset(legendary.name)};
+        //    case(?#Accessory(accessory)) {_streamAccessory(token_index)};
+        //};
+    };
+/*
+    private func _streamStaticAsset(name : Text) : Http.Response {
+        switch(_templates.get(name)){
+            case(null) {{body = (Text.encodeUtf8("Template not found. (critical error)")); headers = [("Content-Type", "text/html; charset=UTF-8")]; streaming_strategy = null; status_code = 200;}};
+            case(?#Material(blob)){{body = blob; headers = [("Content-Type", "image/svg+xml")]; streaming_strategy = null; status_code = 200;}}; //TODO check content type
+            case(?#LegendaryAccessory(blob)){{body = blob; headers = [("Content-Type", "image/svg+xml")]; streaming_strategy = null; status_code = 200;}};
+            case(_) {{body = (Text.encodeUtf8("Error unreacheable")); headers = [("Content-Type", "image/svg+xml")]; streaming_strategy = null; status_code = 200;}};
+        }
+    };  
+
+    private func _streamAccessory(token_index : TokenIndex) : Http.Response {
+        switch(_blobs.get(token_index)){
+            case(null) {{body = (Text.encodeUtf8("Accessory not found. (critical error)")); headers = [("Content-Type", "text/html; charset=UTF-8")]; streaming_strategy = null; status_code = 200;}};
+            case(?blob) {{body = blob; headers = [("Content-Type", "image/svg+xml")]; streaming_strategy = null; status_code = 200; }}
+        }
+    };
+
+*/
+
+//////////////////////////////////////////////////////////////
     // Internal
 
     private func _ownerOf(tokenId : T.TokenId) : ?Principal {
