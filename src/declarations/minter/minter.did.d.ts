@@ -1,12 +1,12 @@
 import type { Principal } from '@dfinity/principal';
 export interface DRC721 {
+  'addAdmin' : (arg_0: Principal) => Promise<Result>,
   'approve' : (arg_0: Principal, arg_1: TokenId) => Promise<undefined>,
   'balanceOf' : (arg_0: Principal) => Promise<[] | [bigint]>,
   'getApproved' : (arg_0: bigint) => Promise<Principal>,
   'http_request' : (arg_0: Request) => Promise<Response>,
   'isApprovedForAll' : (arg_0: Principal, arg_1: Principal) => Promise<boolean>,
   'mint' : (arg_0: string) => Promise<bigint>,
-  'mint_principal' : (arg_0: string, arg_1: Principal) => Promise<bigint>,
   'name' : () => Promise<string>,
   'ownerOf' : (arg_0: TokenId) => Promise<[] | [Principal]>,
   'setApprovalForAll' : (arg_0: Principal, arg_1: boolean) => Promise<
@@ -33,6 +33,8 @@ export interface Response {
   'streaming_strategy' : [] | [StreamingStrategy],
   'status_code' : number,
 }
+export type Result = { 'ok' : null } |
+  { 'err' : string };
 export type StreamingCallback = (arg_0: StreamingCallbackToken) => Promise<
     StreamingCallbackResponse
   >;

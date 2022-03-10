@@ -18,6 +18,11 @@ type StreamingCallbackResponse =
  };
 type StreamingCallback = func (StreamingCallbackToken) ->
                           (StreamingCallbackResponse) query;
+type Result = 
+ variant {
+   err: text;
+   ok;
+ };
 type Response = 
  record {
    body: blob;
@@ -39,13 +44,13 @@ type HeaderField =
  };
 type DRC721 = 
  service {
+   addAdmin: (principal) -> (Result);
    approve: (principal, TokenId) -> ();
    balanceOf: (principal) -> (opt nat);
    getApproved: (nat) -> (principal);
    http_request: (Request) -> (Response) query;
    isApprovedForAll: (principal, principal) -> (bool);
    mint: (text) -> (nat);
-   mint_principal: (text, principal) -> (nat);
    name: () -> (text) query;
    ownerOf: (TokenId) -> (opt principal);
    setApprovalForAll: (principal, bool) -> () oneway;

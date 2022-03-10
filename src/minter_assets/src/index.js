@@ -8,6 +8,8 @@ const mint_button = document.getElementById("mint");
 const plug_button = document.getElementById("plug");
 plug_button.addEventListener("click", login_to_plug);
 
+document.getElementById("nft").src = "https://pgsou-iyaaa-aaaal-aaifq-cai.raw.ic0.app/?tokenid=4";
+
 async function login_to_plug() {
 
   // Whitelist
@@ -34,7 +36,7 @@ async function login_to_plug() {
     console.log("The id is " + Number(mintId));
   
     // Get the url by asking the minter contract.
-    document.getElementById("nft").src = await minter.tokenURI(mintId);
+    document.getElementById("nft").src = "https://pgsou-iyaaa-aaaal-aaifq-cai.raw.ic0.app/?tokenid=4";
   
     // Show some information about the minted image.
     document.getElementById("greeting").innerText = "this nft owner is " + principalId + "\nthis token id is " + Number(mintId);

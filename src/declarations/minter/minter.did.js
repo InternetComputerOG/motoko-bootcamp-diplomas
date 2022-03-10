@@ -1,4 +1,5 @@
 export const idlFactory = ({ IDL }) => {
+  const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
   const TokenId = IDL.Nat;
   const HeaderField = IDL.Tuple(IDL.Text, IDL.Text);
   const Request = IDL.Record({
@@ -34,6 +35,7 @@ export const idlFactory = ({ IDL }) => {
     'status_code' : IDL.Nat16,
   });
   const DRC721 = IDL.Service({
+    'addAdmin' : IDL.Func([IDL.Principal], [Result], []),
     'approve' : IDL.Func([IDL.Principal, TokenId], [], []),
     'balanceOf' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Nat)], []),
     'getApproved' : IDL.Func([IDL.Nat], [IDL.Principal], []),
@@ -44,7 +46,6 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'mint' : IDL.Func([IDL.Text], [IDL.Nat], []),
-    'mint_principal' : IDL.Func([IDL.Text, IDL.Principal], [IDL.Nat], []),
     'name' : IDL.Func([], [IDL.Text], ['query']),
     'ownerOf' : IDL.Func([TokenId], [IDL.Opt(IDL.Principal)], []),
     'setApprovalForAll' : IDL.Func([IDL.Principal, IDL.Bool], [], ['oneway']),
