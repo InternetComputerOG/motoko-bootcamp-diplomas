@@ -42,20 +42,36 @@ type HeaderField =
    text;
    text;
  };
+type Graduate = 
+ record {
+   date: text;
+   name: text;
+   preference: nat;
+   status: text;
+   track: text;
+   username: text;
+ };
 type DRC721 = 
  service {
    addAdmin: (principal) -> (Result);
    approve: (principal, TokenId) -> ();
    balanceOf: (principal) -> (opt nat);
    getApproved: (nat) -> (principal);
+   getRegistry: () -> (vec record {
+                             TokenId;
+                             principal;
+                           });
+   get_diploma: (principal) -> (vec text);
    http_request: (Request) -> (Response) query;
    isApprovedForAll: (principal, principal) -> (bool);
-   mint: (text) -> (nat);
+   mint: (principal, Graduate) -> (nat);
    name: () -> (text) query;
    ownerOf: (TokenId) -> (opt principal);
    setApprovalForAll: (principal, bool) -> () oneway;
+   set_svg_template: (text, text, text, text, text) -> () oneway;
    symbol: () -> (text) query;
    tokenURI: (TokenId) -> (opt text) query;
    transferFrom: (principal, principal, nat) -> () oneway;
+   update_uri: (vec text) -> (text);
  };
 service : (text, text) -> DRC721

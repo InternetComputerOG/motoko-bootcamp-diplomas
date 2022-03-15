@@ -24,13 +24,16 @@ actor class DRC721(_name : Text, _symbol : Text) {
     private stable var ownersEntries : [(T.TokenId, Principal)] = [];
     private stable var balancesEntries : [(Principal, Nat)] = [];
     private stable var tokenApprovalsEntries : [(T.TokenId, Principal)] = [];
-    private stable var operatorApprovalsEntries : [(Principal, [Principal])] = [];  
+    private stable var operatorApprovalsEntries : [(Principal, [Principal])] = [];
+    private stable var svg_components : [Text] = ["", "", "", "", ""];
+    private stable var graduateEntries : [(T.TokenId, Graduate)] = [];    
 
     private let tokenURIs : HashMap.HashMap<T.TokenId, Text> = HashMap.fromIter<T.TokenId, Text>(tokenURIEntries.vals(), 10, Nat.equal, Hash.hash);
     private let owners : HashMap.HashMap<T.TokenId, Principal> = HashMap.fromIter<T.TokenId, Principal>(ownersEntries.vals(), 10, Nat.equal, Hash.hash);
     private let balances : HashMap.HashMap<Principal, Nat> = HashMap.fromIter<Principal, Nat>(balancesEntries.vals(), 10, Principal.equal, Principal.hash);
     private let tokenApprovals : HashMap.HashMap<T.TokenId, Principal> = HashMap.fromIter<T.TokenId, Principal>(tokenApprovalsEntries.vals(), 10, Nat.equal, Hash.hash);
     private let operatorApprovals : HashMap.HashMap<Principal, [Principal]> = HashMap.fromIter<Principal, [Principal]>(operatorApprovalsEntries.vals(), 10, Principal.equal, Principal.hash);
+    private let graduates : HashMap.HashMap<T.TokenId, Graduate> = HashMap.fromIter<T.TokenId, Graduate>(graduateEntries.vals(), 10, Nat.equal, Hash.hash);
 
     private type Pattern = Pattern.Pattern;
     private type Iter<T> = Iter.Iter<T>;
@@ -126,22 +129,123 @@ actor class DRC721(_name : Text, _symbol : Text) {
 */
 
     // Mint requires authentication in the frontend as we are using caller.
-     public shared(msg) func mint(uri : Text) : async Nat {
-      //  assert _isAdmin(msg.caller);
+    public type Graduate = {
+        name : Text;
+        username : Text;
+        preference : Nat;
+        track : Text;
+        date : Text;
+        status : Text;
+    };
+
+     public shared(msg) func mint(to : Principal, graduate : Graduate) : async Nat {
+        assert(_isAdmin(msg.caller));
+        assert(balances.get(to) != ?1);
 
         tokenPk += 1;
-        _mint(msg.caller, tokenPk, uri);
+        _mint(to, tokenPk, graduate);
         return tokenPk;
     };
 
-        // change uri.
-    //  public shared (msg) func update(uri : Text, tokenId : Nat) {
-    //     assert _isAdmin(msg.caller);
+    public shared(msg) func update_uri(graduate_info : [Text]) : async Text {      
+        let tokenId : Nat = _text_to_Nat(graduate_info[0]);
+        let is_owner : Bool = _isOwner(msg.caller, tokenId);
 
-    //     tokenPk += 1;
-    //     _mint(msg.caller, tokenPk, uri);
-    //     return tokenPk;
-    // };
+
+        var graduate : Graduate = {
+                name = graduate_info[1];
+                username = graduate_info[2];
+                preference = _text_to_Nat(graduate_info[3]);
+                track = graduate_info[4];
+                date = graduate_info[5];
+                status = graduate_info[6];
+            };
+
+            _replace_uri(graduate, _text_to_Nat(graduate_info[0]));
+
+        return "Diploma Updated";
+
+        // if(is_owner) {
+        //     switch(graduates.get(tokenId)) {
+        //                     case(null) {};
+        //                     case(?x) {
+        //             var graduate : Graduate = {
+        //                 name = x.name;
+        //                 username = x.username;
+        //                 preference = _text_to_Nat(graduate_info[3]);
+        //                 track = x.track;
+        //                 date = x.date;
+        //                 status = graduate_info[6];
+        //             };
+
+        //             _replace_uri(graduate, _text_to_Nat(graduate_info[0]));
+        //         };
+        //     };
+        // } else if (_isAdmin(msg.caller)) {
+        //     var graduate : Graduate = {
+        //         name = graduate_info[1];
+        //         username = graduate_info[2];
+        //         preference = _text_to_Nat(graduate_info[3]);
+        //         track = graduate_info[4];
+        //         date = graduate_info[5];
+        //         status = graduate_info[6];
+        //     };
+
+        //     _replace_uri(graduate, _text_to_Nat(graduate_info[0]));
+        // };
+    };
+
+    public shared(msg) func get_diploma(principal : Principal) : async [Text] {
+        if (msg.caller == principal or _isAdmin(msg.caller)) {
+            let tokenId : Nat = _getTokenByPrincipal(principal);
+            
+            if (tokenId == 0) {
+                return ["Sorry, it doesn't look like you have a diploma."];
+            } else {
+                switch(graduates.get(tokenId)) {
+                    case(null) return ["sorry, internal error."];
+                    case(?graduate) {
+                        let x : Graduate = graduate;
+                        return ["got this far..."];
+                        return [Nat.toText(tokenId), x.name, x.username, Nat.toText(x.preference), x.track, x.date, x.status];
+                    }
+                }
+            };
+            
+            // ) {
+            //     case(null) return ["Sorry, it doesn't look like you have a diploma."];
+            //     case(?optTokenId) {
+            //         let tokenId : Nat = Option.unwrap(optTokenId);
+            //         var y : ?Graduate = graduates.get(tokenId);
+            //         var x : Graduate = Option.unwrap(y);
+            //         return ["got this far..."];
+            //         //return [Nat.toText(tokenId), x.name, x.username, Nat.toText(x.preference), x.track, x.date, x.status];
+            //     };
+            // };
+        } else {
+            return ["not authorized"];
+        };
+    };
+
+    private func _getTokenByPrincipal(principal : Principal) : Nat {
+        for (key in owners.keys()) {
+            if (_isOwner(principal, key)) {
+                return key;
+            };
+        };
+
+        return 7;
+    };
+
+    public query shared func getRegistry() : async [(T.TokenId, Principal)] {
+        return _getEntries();
+    };
+
+    public shared(msg) func set_svg_template(t1 : Text, t2 : Text, t3 : Text, t4 : Text, t5 : Text) {
+        assert _isAdmin(msg.caller);
+
+        svg_components := [t1, t2, t3, t4, t5];
+    };
 
 ///////////////////////////////////////////////////////////////
 
@@ -157,7 +261,7 @@ actor class DRC721(_name : Text, _symbol : Text) {
         let tokenId = _text_to_Nat(array[array.size() - 1]);
         switch(_tokenURI(tokenId)) {
             case(null) {{body = Blob.fromArray([0]); headers = [("Content-Type", "text/html; charset=UTF-8")];  streaming_strategy = null; status_code = 404;}};
-            case(?text) {{body = (Text.encodeUtf8(text)); headers = [("Content-Type", "text/html; charset=UTF-8")]; streaming_strategy = null; status_code = 200;}};
+            case(?text) {{body = (Text.encodeUtf8(text)); headers = [("Content-Type", "image/svg+xml")]; streaming_strategy = null; status_code = 200;}};
         };
 //        if (tokenURIs.get(token_identifier) == null) {
 //            {body = Blob.fromArray([0]); headers = [("Content-Type", "text/html; charset=UTF-8")];  streaming_strategy = null; status_code = 404;}
@@ -199,9 +303,9 @@ actor class DRC721(_name : Text, _symbol : Text) {
     ///////////
 
     let dfx_identity_principal_isaac : Principal = Principal.fromText("ijeuu-g4z7n-jndij-hzfqh-fe2kw-7oan5-pcmgj-gh3zn-onsas-dqm7c-nqe");
-    let plug_principle_isaac : Principal = Principal.fromText("gj3h2-k3kw2-ciszt-6zylp-azl7o-mvg5j-eudtf-fpejf-mx2rd-ifsul-dqe");
+    let plug_principal_isaac : Principal = Principal.fromText("gj3h2-k3kw2-ciszt-6zylp-azl7o-mvg5j-eudtf-fpejf-mx2rd-ifsul-dqe");
 
-    var admins : [Principal] = [dfx_identity_principal_isaac, plug_principle_isaac]; 
+    var admins : [Principal] = [dfx_identity_principal_isaac, plug_principal_isaac]; 
 
     private func _isAdmin (p: Principal) : Bool {
         return(_contains<Principal>(admins, p, Principal.equal))
@@ -214,22 +318,26 @@ actor class DRC721(_name : Text, _symbol : Text) {
             return #ok ();
         } else {
             return #err ("You are not authorized!");
-        }
+        };
 
     };
 
     // building SVG
-    private func _build_svg(temp_uri : Text) : Text {
-        let pattern : Pattern = #text("<>");
-        let split_text : Iter<Text> = Text.split(temp_uri, pattern);
-        let template : [Text] = ["||","||","||","</svg>"];
-        var count : Nat = 0;
-        var content : Text = "<svg viewBox='0 0 800 800' xmlns='http://www.w3.org/2000/svg' class=''>";
-
-        for (field in split_text) {
-            content #= field # template[count];
-            count += 1;
+    private func _build_svg(graduate : Graduate) : Text {
+        var holder_title = "";
+        
+        if (graduate.preference == 1) {
+            holder_title := graduate.name;
+        } else if (graduate.preference == 2) {
+            holder_title := "aiv";
+        } else if (graduate.preference == 3) {
+            holder_title := "The Owner Of This NFT";
         };
+
+        var content : Text = svg_components[0] # graduate.track;
+        content #= svg_components[1] # graduate.date;
+        content #= svg_components[2] # graduate.status;
+        content #= svg_components[3] # holder_title # svg_components[4];
 
         return content;
     };
@@ -260,8 +368,32 @@ actor class DRC721(_name : Text, _symbol : Text) {
         return owners.get(tokenId);
     };
 
+    private func _isOwner(caller : Principal, tokenId : T.TokenId) : Bool {
+        switch(_ownerOf(tokenId)) {
+            case(null) return false;
+            case(?x) {
+                if (caller == x) {
+                    return true;
+                } else {
+                    return false;
+                };
+            };
+        };
+    };
+
     private func _tokenURI(tokenId : T.TokenId) : ?Text {
         return tokenURIs.get(tokenId);
+    };
+
+    private func _replace_uri(graduate : Graduate, tokenId : T.TokenId) {
+        let new_uri : Text = _build_svg(graduate);
+
+        graduates.put(tokenId, graduate);
+        tokenURIs.put(tokenId, new_uri);
+    };
+
+    private func _getEntries() : [(T.TokenId, Principal)] {
+        Iter.toArray(owners.entries());
     };
 
     private func _isApprovedForAll(owner : Principal, opperator : Principal) : Bool {
@@ -350,13 +482,14 @@ actor class DRC721(_name : Text, _symbol : Text) {
         }
     };
 
-    private func _mint(to : Principal, tokenId : Nat, uri : Text) : () {
+    private func _mint(to : Principal, tokenId : Nat, graduate : Graduate) : () {
         assert not _exists(tokenId);
+        let uri : Text = _build_svg(graduate);
 
-        //let full_uri : Text = _build_svg(uri);
         _incrementBalance(to);
-        owners.put(tokenId, to);
-        tokenURIs.put(tokenId,uri)
+        owners.put(tokenId, to);        
+        tokenURIs.put(tokenId,uri);
+        graduates.put(tokenId, graduate);
     };
 
     private func _burn(tokenId : Nat) {
@@ -377,10 +510,10 @@ actor class DRC721(_name : Text, _symbol : Text) {
     system func preupgrade() {
         tokenURIEntries := Iter.toArray(tokenURIs.entries());
         ownersEntries := Iter.toArray(owners.entries());
+        graduateEntries := Iter.toArray(graduates.entries());
         balancesEntries := Iter.toArray(balances.entries());
         tokenApprovalsEntries := Iter.toArray(tokenApprovals.entries());
         operatorApprovalsEntries := Iter.toArray(operatorApprovals.entries());
-        
     };
 
     system func postupgrade() {
@@ -389,5 +522,7 @@ actor class DRC721(_name : Text, _symbol : Text) {
         balancesEntries := [];
         tokenApprovalsEntries := [];
         operatorApprovalsEntries := [];
+        graduateEntries := [];
     };
+
 };

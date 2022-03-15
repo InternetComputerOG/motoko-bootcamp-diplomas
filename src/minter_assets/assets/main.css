@@ -11,6 +11,10 @@ img {
   margin-bottom: 50px;
 }
 
+input {
+  margin-top: 5px;
+}
+
 form {
   display: flex;
   justify-content: center;
@@ -21,15 +25,23 @@ form {
   align-items: baseline;
 }
 
-button[type="submit"] {
+#full-name {
+  margin-top: 10px;
+  margin-right: 5px;
+}
+
+#update, #plug {
   padding: 5px 20px;
   margin: 10px auto;
+  color: white;
+  background-color: #2563eb;
 }
 
 #greeting {
   margin: 10px auto;
   padding: 10px 60px;
-  border: 1px solid #222;
+  color: white;
+  background-color: #6366f1;
 }
 
 #greeting:empty {
@@ -41,4 +53,8 @@ div {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+}
+
+.hide-this {
+  display: none;
 }

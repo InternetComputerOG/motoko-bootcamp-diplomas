@@ -34,21 +34,40 @@ export const idlFactory = ({ IDL }) => {
     'streaming_strategy' : IDL.Opt(StreamingStrategy),
     'status_code' : IDL.Nat16,
   });
+  const Graduate = IDL.Record({
+    'status' : IDL.Text,
+    'track' : IDL.Text,
+    'username' : IDL.Text,
+    'date' : IDL.Text,
+    'name' : IDL.Text,
+    'preference' : IDL.Nat,
+  });
   const DRC721 = IDL.Service({
     'addAdmin' : IDL.Func([IDL.Principal], [Result], []),
     'approve' : IDL.Func([IDL.Principal, TokenId], [], []),
     'balanceOf' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Nat)], []),
     'getApproved' : IDL.Func([IDL.Nat], [IDL.Principal], []),
+    'getRegistry' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(TokenId, IDL.Principal))],
+        [],
+      ),
+    'get_diploma' : IDL.Func([IDL.Principal], [IDL.Vec(IDL.Text)], []),
     'http_request' : IDL.Func([Request], [Response], ['query']),
     'isApprovedForAll' : IDL.Func(
         [IDL.Principal, IDL.Principal],
         [IDL.Bool],
         [],
       ),
-    'mint' : IDL.Func([IDL.Text], [IDL.Nat], []),
+    'mint' : IDL.Func([IDL.Principal, Graduate], [IDL.Nat], []),
     'name' : IDL.Func([], [IDL.Text], ['query']),
     'ownerOf' : IDL.Func([TokenId], [IDL.Opt(IDL.Principal)], []),
     'setApprovalForAll' : IDL.Func([IDL.Principal, IDL.Bool], [], ['oneway']),
+    'set_svg_template' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [],
+        ['oneway'],
+      ),
     'symbol' : IDL.Func([], [IDL.Text], ['query']),
     'tokenURI' : IDL.Func([TokenId], [IDL.Opt(IDL.Text)], ['query']),
     'transferFrom' : IDL.Func(
@@ -56,6 +75,7 @@ export const idlFactory = ({ IDL }) => {
         [],
         ['oneway'],
       ),
+    'update_uri' : IDL.Func([IDL.Vec(IDL.Text)], [IDL.Text], []),
   });
   return DRC721;
 };

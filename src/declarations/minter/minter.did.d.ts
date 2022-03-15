@@ -4,14 +4,23 @@ export interface DRC721 {
   'approve' : (arg_0: Principal, arg_1: TokenId) => Promise<undefined>,
   'balanceOf' : (arg_0: Principal) => Promise<[] | [bigint]>,
   'getApproved' : (arg_0: bigint) => Promise<Principal>,
+  'getRegistry' : () => Promise<Array<[TokenId, Principal]>>,
+  'get_diploma' : (arg_0: Principal) => Promise<Array<string>>,
   'http_request' : (arg_0: Request) => Promise<Response>,
   'isApprovedForAll' : (arg_0: Principal, arg_1: Principal) => Promise<boolean>,
-  'mint' : (arg_0: string) => Promise<bigint>,
+  'mint' : (arg_0: Principal, arg_1: Graduate) => Promise<bigint>,
   'name' : () => Promise<string>,
   'ownerOf' : (arg_0: TokenId) => Promise<[] | [Principal]>,
   'setApprovalForAll' : (arg_0: Principal, arg_1: boolean) => Promise<
       undefined
     >,
+  'set_svg_template' : (
+      arg_0: string,
+      arg_1: string,
+      arg_2: string,
+      arg_3: string,
+      arg_4: string,
+    ) => Promise<undefined>,
   'symbol' : () => Promise<string>,
   'tokenURI' : (arg_0: TokenId) => Promise<[] | [string]>,
   'transferFrom' : (
@@ -19,6 +28,15 @@ export interface DRC721 {
       arg_1: Principal,
       arg_2: bigint,
     ) => Promise<undefined>,
+  'update_uri' : (arg_0: Array<string>) => Promise<string>,
+}
+export interface Graduate {
+  'status' : string,
+  'track' : string,
+  'username' : string,
+  'date' : string,
+  'name' : string,
+  'preference' : bigint,
 }
 export type HeaderField = [string, string];
 export interface Request {

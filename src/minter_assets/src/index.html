@@ -6,21 +6,92 @@
     <title>minter</title>
     <base href="/" />
     <link rel="icon" href="favicon.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <link type="text/css" rel="stylesheet" href="main.css" />
   </head>
   <body>
     <main>
       <img id="nft" src="logo.png" alt="bootcamp_logo" />
-      <form action="#">
-        <label for="name">Enter a tokenURI: &nbsp;</label>
-        <textarea id="name" rows="100" cols="100"></textarea>
-      </form>
+      <div id="greeting" class="font-bold Indigo">Welcome! Please login with your Plug wallet.</div>
       <div>
-        <button id="mint" type="submit" disabled>Mint !</button>
+          <button id="plug" class="rounded-full shadow-xl Blue" type="submit">Connect Plug Wallet</button>
       </div>
-      <div id="greeting"></div>
-      <div>
-        <button id="plug" type="submit">Login to Plug</button>
+      <div id="graduate" class="hide-this">
+        <form action="#" class="block">
+          <label for="preferred-name" class="block w-full font-bold">Preferred Display Name &nbsp;</label>
+          <div class="block w-full">
+            <input class="float-left text-sm" type="radio" id="full-name" name="preferred-name" value="1">
+            <label class="float-left" id="full-name-label" for="full-name">Your Name</label><br>
+          </div>
+            
+          <div class="block w-full">
+<input type="radio" id="DSCVR" name="preferred-name" value="2">
+          <label id="DSCVR-label" for="DSCVR">DSCVR Username</label><br>
+          </div>
+          
+          <div class="block w-full">
+    <input type="radio" id="private" name="preferred-name" value="3">
+          <label for="private">Private</label><br></br>
+          </div>
+      
+          <label for="set-status" class="block w-full font-bold">Your Current Status &nbsp;</label>
+          <div class="block w-full">
+<input type="radio" id="looking" name="set-status" value="looking-status">
+          <label for="looking">Open to IC dev job offers</label><br>
+          </div>
+          
+          <div class="block w-full">
+  <input type="radio" id="hiring" name="set-status" value="hiring-status">
+          <label for="hiring">Looking to hire an IC dev</label><br>
+          </div>
+        
+          <div class="block w-full">
+<input type="radio" id="neutral" name="set-status" value="default-status">
+          <label for="neutral">Neutral (neither)</label><br>
+          </div>
+          <div class="block w-full">
+            <button id="update" class="rounded-full shadow-xl Blue">Update Diploma!</button>
+          </div>
+        </form>
+      </div>
+      <div id="admin" class="hide-this">
+        <h1>Set SVG Template</h1>
+        <form action="#">
+          <label for="component1">Component 1: &nbsp;</label>
+          <textarea id="component1" rows="10" cols="100"></textarea>
+          <label for="component2">Component 2: &nbsp;</label>
+          <textarea id="component2" rows="10" cols="100"></textarea>
+          <label for="component3">Component 3: &nbsp;</label>
+          <textarea id="component3" rows="10" cols="100"></textarea>
+          <label for="component4">Component 4: &nbsp;</label>
+          <textarea id="component4" rows="10" cols="100"></textarea>
+          <label for="component5">Component 5: &nbsp;</label>
+          <textarea id="component5" rows="10" cols="100"></textarea>
+        </form>
+        <div>
+          <button id="setTemplate" type="submit">Set Template</button>
+        </div>
+        <div id="edit-graduate">
+          <form action="#">
+            <label for="edit-graduate">token: &nbsp;</label>
+            <textarea id="edit-graduate-0" rows="10" cols="100"></textarea>
+            <label for="component2">name: &nbsp;</label>
+            <textarea id="edit-graduate-1" rows="10" cols="100"></textarea>
+            <label for="component3">username: &nbsp;</label>
+            <textarea id="edit-graduate-2" rows="10" cols="100"></textarea>
+            <label for="component4">preference: &nbsp;</label>
+            <textarea id="edit-graduate-3" rows="10" cols="100"></textarea>
+            <label for="component5">track: &nbsp;</label>
+            <textarea id="edit-graduate-4" rows="10" cols="100"></textarea>
+            <label for="component4">date: &nbsp;</label>
+            <textarea id="edit-graduate-5" rows="10" cols="100"></textarea>
+            <label for="component5">status: &nbsp;</label>
+            <textarea id="edit-graduate-6" rows="10" cols="100"></textarea>
+          </form>
+          <div>
+            <button id="update-graduate" type="submit">Update Diploma!</button>
+          </div>
+        </div>
       </div>
     </main>
   </body>

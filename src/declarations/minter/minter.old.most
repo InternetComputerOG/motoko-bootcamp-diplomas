@@ -1,8 +1,19 @@
+type Graduate =
+  {
+    date : Text;
+    name : Text;
+    preference : Nat;
+    status : Text;
+    track : Text;
+    username : Text
+  };
 type TokenId = Nat;
 actor {
   stable var balancesEntries : [(Principal, Nat)];
+  stable var graduateEntries : [(TokenId, Graduate)];
   stable var operatorApprovalsEntries : [(Principal, [Principal])];
   stable var ownersEntries : [(TokenId, Principal)];
+  stable var svg_components : [Text];
   stable var tokenApprovalsEntries : [(TokenId, Principal)];
   stable var tokenPk : Nat;
   stable var tokenURIEntries : [(TokenId, Text)]
