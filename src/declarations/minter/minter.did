@@ -60,7 +60,7 @@ type DRC721 =
    getRegistry: () -> (vec record {
                              TokenId;
                              principal;
-                           });
+                           }) query;
    get_diploma: (principal) -> (vec text);
    http_request: (Request) -> (Response) query;
    isApprovedForAll: (principal, principal) -> (bool);

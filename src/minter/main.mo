@@ -237,7 +237,7 @@ actor class DRC721(_name : Text, _symbol : Text) {
         return 7;
     };
 
-    public query shared func getRegistry() : async [(T.TokenId, Principal)] {
+    public query func getRegistry() : async [(T.TokenId, Principal)] {
         return _getEntries();
     };
 

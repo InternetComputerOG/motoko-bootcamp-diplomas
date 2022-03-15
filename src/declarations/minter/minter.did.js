@@ -50,7 +50,7 @@ export const idlFactory = ({ IDL }) => {
     'getRegistry' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(TokenId, IDL.Principal))],
-        [],
+        ['query'],
       ),
     'get_diploma' : IDL.Func([IDL.Principal], [IDL.Vec(IDL.Text)], []),
     'http_request' : IDL.Func([Request], [Response], ['query']),
