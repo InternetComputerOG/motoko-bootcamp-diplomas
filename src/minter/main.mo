@@ -25,7 +25,7 @@ actor class DRC721(_name : Text, _symbol : Text) {
     private stable var balancesEntries : [(Principal, Nat)] = [];
     private stable var tokenApprovalsEntries : [(T.TokenId, Principal)] = [];
     private stable var operatorApprovalsEntries : [(Principal, [Principal])] = [];
-    private stable var svg_components : [Text] = ["", "", "", "", ""];
+    private stable var svg_artwork : Text = "This diploma does not exist";
     private stable var graduateEntries : [(T.TokenId, Graduate)] = [];    
 
     private let tokenURIs : HashMap.HashMap<T.TokenId, Text> = HashMap.fromIter<T.TokenId, Text>(tokenURIEntries.vals(), 10, Nat.equal, Hash.hash);
@@ -37,6 +37,16 @@ actor class DRC721(_name : Text, _symbol : Text) {
 
     private type Pattern = Pattern.Pattern;
     private type Iter<T> = Iter.Iter<T>;
+    public type Graduate = {
+        name : Text;
+        username : Text;
+        preference : Nat;
+        desc1 : Text;
+        desc2 : Text;
+        track : Text;
+        date : Text;
+        status : Text;
+    };
 
     public shared func balanceOf(p : Principal) : async ?Nat {
         return balances.get(p);
@@ -119,26 +129,18 @@ actor class DRC721(_name : Text, _symbol : Text) {
         _transfer(from, to, tokenId);
     };
 
-    // Mint without authentication
-/*
-    public func mint_principal(uri : Text, principal : Principal) : async Nat {
-        tokenPk += 1;
-        _mint(principal, tokenPk, uri);
-        return tokenPk;
-    };
-*/
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Mint requires authentication in the frontend as we are using caller.
-    public type Graduate = {
-        name : Text;
-        username : Text;
-        preference : Nat;
-        track : Text;
-        date : Text;
-        status : Text;
-    };
+// Start of construction area
 
-     public shared(msg) func mint(to : Principal, graduate : Graduate) : async Nat {
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+    
+
+    public shared(msg) func mint(to : Principal, graduate : Graduate) : async Nat {
         assert(_isAdmin(msg.caller));
         assert(balances.get(to) != ?1);
 
@@ -147,104 +149,64 @@ actor class DRC721(_name : Text, _symbol : Text) {
         return tokenPk;
     };
 
-    public shared(msg) func update_uri(graduate_info : [Text]) : async Text {      
-        let tokenId : Nat = _text_to_Nat(graduate_info[0]);
-        let is_owner : Bool = _isOwner(msg.caller, tokenId);
+    public shared(msg) func update_uri(tokenId : Nat, status : Text, preference : Nat) : async Text {
+        assert(_isOwner(msg.caller, tokenId));
 
+        switch(graduates.get(tokenId)) {
+            case(null) return "Diploma with ID " # Nat.toText(tokenId) # " not found...";
+            case(?value) {
+                let graduate : Graduate = {
+                    name = value.name;
+                    username = value.username;
+                    preference = preference;
+                    desc1 = value.desc1;
+                    desc2 = value.desc2;
+                    track = value.track;
+                    date = value.date;
+                    status = status; 
+                };
 
-        var graduate : Graduate = {
-                name = graduate_info[1];
-                username = graduate_info[2];
-                preference = _text_to_Nat(graduate_info[3]);
-                track = graduate_info[4];
-                date = graduate_info[5];
-                status = graduate_info[6];
+                graduates.put(tokenId, graduate);
+                _replace_uri(graduate, tokenId);
+
+                return "Diploma Updated";
             };
-
-            _replace_uri(graduate, _text_to_Nat(graduate_info[0]));
-
-        return "Diploma Updated";
-
-        // if(is_owner) {
-        //     switch(graduates.get(tokenId)) {
-        //                     case(null) {};
-        //                     case(?x) {
-        //             var graduate : Graduate = {
-        //                 name = x.name;
-        //                 username = x.username;
-        //                 preference = _text_to_Nat(graduate_info[3]);
-        //                 track = x.track;
-        //                 date = x.date;
-        //                 status = graduate_info[6];
-        //             };
-
-        //             _replace_uri(graduate, _text_to_Nat(graduate_info[0]));
-        //         };
-        //     };
-        // } else if (_isAdmin(msg.caller)) {
-        //     var graduate : Graduate = {
-        //         name = graduate_info[1];
-        //         username = graduate_info[2];
-        //         preference = _text_to_Nat(graduate_info[3]);
-        //         track = graduate_info[4];
-        //         date = graduate_info[5];
-        //         status = graduate_info[6];
-        //     };
-
-        //     _replace_uri(graduate, _text_to_Nat(graduate_info[0]));
-        // };
-    };
-
-    public shared(msg) func get_diploma(principal : Principal) : async [Text] {
-        if (msg.caller == principal or _isAdmin(msg.caller)) {
-            let tokenId : Nat = _getTokenByPrincipal(principal);
-            
-            if (tokenId == 0) {
-                return ["Sorry, it doesn't look like you have a diploma."];
-            } else {
-                switch(graduates.get(tokenId)) {
-                    case(null) return ["sorry, internal error."];
-                    case(?graduate) {
-                        let x : Graduate = graduate;
-                        return ["got this far..."];
-                        return [Nat.toText(tokenId), x.name, x.username, Nat.toText(x.preference), x.track, x.date, x.status];
-                    }
-                }
-            };
-            
-            // ) {
-            //     case(null) return ["Sorry, it doesn't look like you have a diploma."];
-            //     case(?optTokenId) {
-            //         let tokenId : Nat = Option.unwrap(optTokenId);
-            //         var y : ?Graduate = graduates.get(tokenId);
-            //         var x : Graduate = Option.unwrap(y);
-            //         return ["got this far..."];
-            //         //return [Nat.toText(tokenId), x.name, x.username, Nat.toText(x.preference), x.track, x.date, x.status];
-            //     };
-            // };
-        } else {
-            return ["not authorized"];
         };
     };
 
-    private func _getTokenByPrincipal(principal : Principal) : Nat {
-        for (key in owners.keys()) {
-            if (_isOwner(principal, key)) {
-                return key;
+
+    public shared(msg) func admin_update_uri(tokenId : Nat, graduate : Graduate) : async Text {    
+        assert(_isAdmin(msg.caller));
+
+        switch(graduates.get(tokenId)) {
+            case(null) return "Diploma with ID " # Nat.toText(tokenId) # " not found...";
+            case(?value) {
+                graduates.put(tokenId, graduate);
+                _replace_uri(graduate, tokenId);
+
+                return "Diploma Updated";
             };
         };
+    };
 
-        return 7;
+    public shared(msg) func get_diploma(principal : Principal) : async ?Graduate {
+        assert(msg.caller == principal or _isAdmin(msg.caller));
+        let tokenId : ?Nat = _getTokenByPrincipal(principal);
+        
+        switch (tokenId) {
+            case(null) return null;
+            case(?value) return graduates.get(value);
+        };
     };
 
     public query func getRegistry() : async [(T.TokenId, Principal)] {
         return _getEntries();
     };
 
-    public shared(msg) func set_svg_template(t1 : Text, t2 : Text, t3 : Text, t4 : Text, t5 : Text) {
+    public shared(msg) func set_svg_template(text : Text) {
         assert _isAdmin(msg.caller);
 
-        svg_components := [t1, t2, t3, t4, t5];
+        svg_artwork := text;
     };
 
 ///////////////////////////////////////////////////////////////
@@ -253,6 +215,7 @@ actor class DRC721(_name : Text, _symbol : Text) {
     // HTTP //
     //////////
 
+///////////////////////////////////////////////////////////////
 
 
     public query func http_request(request : Http.Request) : async Http.Response {
@@ -263,44 +226,15 @@ actor class DRC721(_name : Text, _symbol : Text) {
             case(null) {{body = Blob.fromArray([0]); headers = [("Content-Type", "text/html; charset=UTF-8")];  streaming_strategy = null; status_code = 404;}};
             case(?text) {{body = (Text.encodeUtf8(text)); headers = [("Content-Type", "image/svg+xml")]; streaming_strategy = null; status_code = 200;}};
         };
-//        if (tokenURIs.get(token_identifier) == null) {
-//            {body = Blob.fromArray([0]); headers = [("Content-Type", "text/html; charset=UTF-8")];  streaming_strategy = null; status_code = 404;}
-//        } else {
-           //   {body = (Text.encodeUtf8(_tokenURI(tokenId))); headers = [("Content-Type", "text/html; charset=UTF-8")]; streaming_strategy = null; status_code = 200;}
-//        };
-        //switch(tokenURIs.get(tokenId)){
-        //    case(null) {{body = Blob.fromArray([0]); headers = [("Content-Type", "text/html; charset=UTF-8")];  streaming_strategy = null; status_code = 404;}};
-        //    case(?#Material(name)) {_streamStaticAsset(name)};
-        //    case(?#LegendaryAccessory(legendary)) {_streamStaticAsset(legendary.name)};
-        //    case(?#Accessory(accessory)) {_streamAccessory(token_index)};
-        //};
-    };
-/*
-    private func _streamStaticAsset(name : Text) : Http.Response {
-        switch(_templates.get(name)){
-            case(null) {{body = (Text.encodeUtf8("Template not found. (critical error)")); headers = [("Content-Type", "text/html; charset=UTF-8")]; streaming_strategy = null; status_code = 200;}};
-            case(?#Material(blob)){{body = blob; headers = [("Content-Type", "image/svg+xml")]; streaming_strategy = null; status_code = 200;}}; //TODO check content type
-            case(?#LegendaryAccessory(blob)){{body = blob; headers = [("Content-Type", "image/svg+xml")]; streaming_strategy = null; status_code = 200;}};
-            case(_) {{body = (Text.encodeUtf8("Error unreacheable")); headers = [("Content-Type", "image/svg+xml")]; streaming_strategy = null; status_code = 200;}};
-        }
-    };  
-
-    private func _streamAccessory(token_index : TokenIndex) : Http.Response {
-        switch(_blobs.get(token_index)){
-            case(null) {{body = (Text.encodeUtf8("Accessory not found. (critical error)")); headers = [("Content-Type", "text/html; charset=UTF-8")]; streaming_strategy = null; status_code = 200;}};
-            case(?blob) {{body = blob; headers = [("Content-Type", "image/svg+xml")]; streaming_strategy = null; status_code = 200; }}
-        }
     };
 
-*/
-
-//////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
 
     ///////////
     // ADMIN //
     ///////////
+
+///////////////////////////////////////////////////////////////
 
     let dfx_identity_principal_isaac : Principal = Principal.fromText("ijeuu-g4z7n-jndij-hzfqh-fe2kw-7oan5-pcmgj-gh3zn-onsas-dqm7c-nqe");
     let plug_principal_isaac : Principal = Principal.fromText("gj3h2-k3kw2-ciszt-6zylp-azl7o-mvg5j-eudtf-fpejf-mx2rd-ifsul-dqe");
@@ -324,23 +258,46 @@ actor class DRC721(_name : Text, _symbol : Text) {
 
     // building SVG
     private func _build_svg(graduate : Graduate) : Text {
-        var holder_title = "";
+        var holder_title = "The Owner Of This NFT";
         
         if (graduate.preference == 1) {
             holder_title := graduate.name;
         } else if (graduate.preference == 2) {
-            holder_title := "aiv";
+            holder_title := graduate.username;
         } else if (graduate.preference == 3) {
             holder_title := "The Owner Of This NFT";
         };
 
-        var content : Text = svg_components[0] # graduate.track;
-        content #= svg_components[1] # graduate.date;
-        content #= svg_components[2] # graduate.status;
-        content #= svg_components[3] # holder_title # svg_components[4];
+        var content : Text = svg_artwork;
+        content := Text.replace(content, #text "||DESC1||", graduate.desc1);
+        content := Text.replace(content, #text "||TITLE||", holder_title);
+        content := Text.replace(content, #text "||DESC2||", graduate.desc2);
+        content := Text.replace(content, #text "||TRACK||", graduate.track);
+        content := Text.replace(content, #text "||DATE||", graduate.date);
+        content := Text.replace(content, #text "||STATUS||", graduate.status);
 
         return content;
     };
+
+    private func _getTokenByPrincipal(principal : Principal) : ?Nat {
+        for (key in owners.keys()) {
+            if (_isOwner(principal, key)) {
+                return ?key;
+            };
+        };
+
+        return null;
+    };
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+// End of construction area
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 
     // Internal
     private func _text_to_Nat( t : Text) : Nat {

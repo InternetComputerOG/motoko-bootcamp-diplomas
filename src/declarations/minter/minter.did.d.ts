@@ -1,11 +1,12 @@
 import type { Principal } from '@dfinity/principal';
 export interface DRC721 {
   'addAdmin' : (arg_0: Principal) => Promise<Result>,
+  'admin_update_uri' : (arg_0: bigint, arg_1: Graduate) => Promise<string>,
   'approve' : (arg_0: Principal, arg_1: TokenId) => Promise<undefined>,
   'balanceOf' : (arg_0: Principal) => Promise<[] | [bigint]>,
   'getApproved' : (arg_0: bigint) => Promise<Principal>,
   'getRegistry' : () => Promise<Array<[TokenId, Principal]>>,
-  'get_diploma' : (arg_0: Principal) => Promise<Array<string>>,
+  'get_diploma' : (arg_0: Principal) => Promise<[] | [Graduate]>,
   'http_request' : (arg_0: Request) => Promise<Response>,
   'isApprovedForAll' : (arg_0: Principal, arg_1: Principal) => Promise<boolean>,
   'mint' : (arg_0: Principal, arg_1: Graduate) => Promise<bigint>,
@@ -14,13 +15,7 @@ export interface DRC721 {
   'setApprovalForAll' : (arg_0: Principal, arg_1: boolean) => Promise<
       undefined
     >,
-  'set_svg_template' : (
-      arg_0: string,
-      arg_1: string,
-      arg_2: string,
-      arg_3: string,
-      arg_4: string,
-    ) => Promise<undefined>,
+  'set_svg_template' : (arg_0: string) => Promise<undefined>,
   'symbol' : () => Promise<string>,
   'tokenURI' : (arg_0: TokenId) => Promise<[] | [string]>,
   'transferFrom' : (
@@ -28,7 +23,9 @@ export interface DRC721 {
       arg_1: Principal,
       arg_2: bigint,
     ) => Promise<undefined>,
-  'update_uri' : (arg_0: Array<string>) => Promise<string>,
+  'update_uri' : (arg_0: bigint, arg_1: string, arg_2: bigint) => Promise<
+      string
+    >,
 }
 export interface Graduate {
   'status' : string,
@@ -37,6 +34,8 @@ export interface Graduate {
   'date' : string,
   'name' : string,
   'preference' : bigint,
+  'desc1' : string,
+  'desc2' : string,
 }
 export type HeaderField = [string, string];
 export interface Request {

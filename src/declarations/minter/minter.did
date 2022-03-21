@@ -45,6 +45,8 @@ type HeaderField =
 type Graduate = 
  record {
    date: text;
+   desc1: text;
+   desc2: text;
    name: text;
    preference: nat;
    status: text;
@@ -54,6 +56,7 @@ type Graduate =
 type DRC721 = 
  service {
    addAdmin: (principal) -> (Result);
+   admin_update_uri: (nat, Graduate) -> (text);
    approve: (principal, TokenId) -> ();
    balanceOf: (principal) -> (opt nat);
    getApproved: (nat) -> (principal);
@@ -61,17 +64,17 @@ type DRC721 =
                              TokenId;
                              principal;
                            }) query;
-   get_diploma: (principal) -> (vec text);
+   get_diploma: (principal) -> (opt Graduate);
    http_request: (Request) -> (Response) query;
    isApprovedForAll: (principal, principal) -> (bool);
    mint: (principal, Graduate) -> (nat);
    name: () -> (text) query;
    ownerOf: (TokenId) -> (opt principal);
    setApprovalForAll: (principal, bool) -> () oneway;
-   set_svg_template: (text, text, text, text, text) -> () oneway;
+   set_svg_template: (text) -> () oneway;
    symbol: () -> (text) query;
    tokenURI: (TokenId) -> (opt text) query;
    transferFrom: (principal, principal, nat) -> () oneway;
-   update_uri: (vec text) -> (text);
+   update_uri: (nat, text, nat) -> (text);
  };
 service : (text, text) -> DRC721

@@ -1,5 +1,15 @@
 export const idlFactory = ({ IDL }) => {
   const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
+  const Graduate = IDL.Record({
+    'status' : IDL.Text,
+    'track' : IDL.Text,
+    'username' : IDL.Text,
+    'date' : IDL.Text,
+    'name' : IDL.Text,
+    'preference' : IDL.Nat,
+    'desc1' : IDL.Text,
+    'desc2' : IDL.Text,
+  });
   const TokenId = IDL.Nat;
   const HeaderField = IDL.Tuple(IDL.Text, IDL.Text);
   const Request = IDL.Record({
@@ -34,16 +44,9 @@ export const idlFactory = ({ IDL }) => {
     'streaming_strategy' : IDL.Opt(StreamingStrategy),
     'status_code' : IDL.Nat16,
   });
-  const Graduate = IDL.Record({
-    'status' : IDL.Text,
-    'track' : IDL.Text,
-    'username' : IDL.Text,
-    'date' : IDL.Text,
-    'name' : IDL.Text,
-    'preference' : IDL.Nat,
-  });
   const DRC721 = IDL.Service({
     'addAdmin' : IDL.Func([IDL.Principal], [Result], []),
+    'admin_update_uri' : IDL.Func([IDL.Nat, Graduate], [IDL.Text], []),
     'approve' : IDL.Func([IDL.Principal, TokenId], [], []),
     'balanceOf' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Nat)], []),
     'getApproved' : IDL.Func([IDL.Nat], [IDL.Principal], []),
@@ -52,7 +55,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(TokenId, IDL.Principal))],
         ['query'],
       ),
-    'get_diploma' : IDL.Func([IDL.Principal], [IDL.Vec(IDL.Text)], []),
+    'get_diploma' : IDL.Func([IDL.Principal], [IDL.Opt(Graduate)], []),
     'http_request' : IDL.Func([Request], [Response], ['query']),
     'isApprovedForAll' : IDL.Func(
         [IDL.Principal, IDL.Principal],
@@ -63,11 +66,7 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Func([], [IDL.Text], ['query']),
     'ownerOf' : IDL.Func([TokenId], [IDL.Opt(IDL.Principal)], []),
     'setApprovalForAll' : IDL.Func([IDL.Principal, IDL.Bool], [], ['oneway']),
-    'set_svg_template' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
-        [],
-        ['oneway'],
-      ),
+    'set_svg_template' : IDL.Func([IDL.Text], [], ['oneway']),
     'symbol' : IDL.Func([], [IDL.Text], ['query']),
     'tokenURI' : IDL.Func([TokenId], [IDL.Opt(IDL.Text)], ['query']),
     'transferFrom' : IDL.Func(
@@ -75,7 +74,7 @@ export const idlFactory = ({ IDL }) => {
         [],
         ['oneway'],
       ),
-    'update_uri' : IDL.Func([IDL.Vec(IDL.Text)], [IDL.Text], []),
+    'update_uri' : IDL.Func([IDL.Nat, IDL.Text, IDL.Nat], [IDL.Text], []),
   });
   return DRC721;
 };
