@@ -123,10 +123,10 @@ actor class DRC721(_name : Text, _symbol : Text) {
         
     };
 
-    public shared(msg) func transferFrom(from : Principal, to : Principal, tokenId : Nat) : () {
+    public shared(msg) func transferFrom(from : Text, to : Text, tokenId : Nat) : () {
         assert _isAdmin(msg.caller);
 
-        _transfer(from, to, tokenId);
+        _transfer(Principal.fromText(from), Principal.fromText(to), tokenId);
     };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,7 +166,6 @@ actor class DRC721(_name : Text, _symbol : Text) {
                     status = status; 
                 };
 
-                graduates.put(tokenId, graduate);
                 _replace_uri(graduate, tokenId);
 
                 return "Diploma Updated";
@@ -175,13 +174,16 @@ actor class DRC721(_name : Text, _symbol : Text) {
     };
 
 
-    public shared(msg) func admin_update_uri(tokenId : Nat, graduate : Graduate) : async Text {    
+    public shared(msg) func admin_update_graduate(tokenId : Nat, graduate : Graduate) : async Text {    
         assert(_isAdmin(msg.caller));
 
         switch(graduates.get(tokenId)) {
-            case(null) return "Diploma with ID " # Nat.toText(tokenId) # " not found...";
+            case(null) {
+                _replace_uri(graduate, tokenId);
+
+                return "Diploma Created & Updated";
+            };
             case(?value) {
-                graduates.put(tokenId, graduate);
                 _replace_uri(graduate, tokenId);
 
                 return "Diploma Updated";
@@ -207,6 +209,11 @@ actor class DRC721(_name : Text, _symbol : Text) {
         assert _isAdmin(msg.caller);
 
         svg_artwork := text;
+    };
+
+    public shared(msg) func get_token_by_principal(principal : Principal) : async ?Nat {
+        assert(msg.caller == principal or _isAdmin(msg.caller));
+        return _getTokenByPrincipal(principal);
     };
 
 ///////////////////////////////////////////////////////////////
@@ -238,8 +245,9 @@ actor class DRC721(_name : Text, _symbol : Text) {
 
     let dfx_identity_principal_isaac : Principal = Principal.fromText("ijeuu-g4z7n-jndij-hzfqh-fe2kw-7oan5-pcmgj-gh3zn-onsas-dqm7c-nqe");
     let plug_principal_isaac : Principal = Principal.fromText("gj3h2-k3kw2-ciszt-6zylp-azl7o-mvg5j-eudtf-fpejf-mx2rd-ifsul-dqe");
+    let plug_principal_seb : Principal = Principal.fromText("udmjf-fyc6j-f7dnl-dw5bh-hh4wg-ln7iy-36pgp-mjocm-my4vc-r2irg-2ae");
 
-    var admins : [Principal] = [dfx_identity_principal_isaac, plug_principal_isaac]; 
+    var admins : [Principal] = [dfx_identity_principal_isaac, plug_principal_isaac, plug_principal_seb]; 
 
     private func _isAdmin (p: Principal) : Bool {
         return(_contains<Principal>(admins, p, Principal.equal))
@@ -406,7 +414,7 @@ actor class DRC721(_name : Text, _symbol : Text) {
 
     private func _transfer(from : Principal, to : Principal, tokenId : Nat) : () {
         assert _exists(tokenId);
-        assert Option.unwrap(_ownerOf(tokenId)) == from;
+        // assert Option.unwrap(_ownerOf(tokenId)) == from;
 
         // Bug in HashMap https://github.com/dfinity/motoko-base/pull/253/files
         // this will throw unless you patch your file

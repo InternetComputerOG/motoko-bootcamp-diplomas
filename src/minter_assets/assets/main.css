@@ -12,15 +12,15 @@ img {
 }
 
 input {
-  margin-top: 5px;
+  margin: 5px;
 }
 
-form {
+#graduate-form {
   display: flex;
   justify-content: center;
   gap: 0.5em;
   flex-flow: row wrap;
-  max-width: 40vw;
+  max-width: 310px;
   margin: auto;
   align-items: baseline;
 }
@@ -30,11 +30,19 @@ form {
   margin-right: 5px;
 }
 
-#update, #plug {
+#update, #plug, [type=button], [type=reset], [type=submit], button {
   padding: 5px 20px;
   margin: 10px auto;
   color: white;
   background-color: #2563eb;
+}
+
+#admin [type=button], #admin [type=reset], #admin [type=submit], #admin button {
+  background-color: #2563eb !important;
+}
+
+#update:disabled, #plug:disabled, button:disabled {
+  background-color: #525252;
 }
 
 #greeting {
@@ -42,13 +50,15 @@ form {
   padding: 10px 60px;
   color: white;
   background-color: #6366f1;
+  text-align: center;
 }
 
 #greeting:empty {
   display: none;
+  text-align: center;
 }
 
-div {
+.main-view {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -57,4 +67,13 @@ div {
 
 .hide-this {
   display: none;
+}
+
+#admin input, #admin textarea {
+  border-color: red;
+  border-width: 1px;
+}
+
+#admin form {
+  margin: 10% 5%;
 }

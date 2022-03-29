@@ -11,11 +11,15 @@ const admin = "gj3h2-k3kw2-ciszt-6zylp-azl7o-mvg5j-eudtf-fpejf-mx2rd-ifsul-dqe";
 const admin_forms = document.getElementById("admin");
 const graduate_form = document.getElementById("graduate");
 const update_graduate_button = document.getElementById("update-graduate");
+const transfer_nft_button = document.getElementById("transfer-nft");
 var actor_diploma = null;
 var principalId = null;
+var graduate_token_id = null;
 var graduate = null;
 
 const plugConnection = async () => {
+  document.getElementById("greeting").innerText = "Waiting on permission from Plug";
+  plug_button.disabled = true;
   plug_button.innerText = "Please wait...";
 
   const result = await (window).ic.plug.requestConnect({
@@ -34,79 +38,71 @@ const plugConnection = async () => {
     interfaceFactory: idlFactory,
   });
 
+  document.getElementById("greeting").innerText = "Loading your information...";
   console.log("about to get diploma")
   graduate = await actor_diploma.get_diploma(principalId);
-  console.log("got diploma")
+  graduate = graduate[0];
 
-  plug_button.classList.add("hide-this");
+  if (graduate == null) {
+    document.getElementById("greeting").innerText = "Sorry, it looks like you don't have a diploma!";
+    return;
+  };
 
-  // if (graduate.length == 1) {
-  //   document.getElementById("greeting").innerText = graduate[0];
-  //   //return;
-  //   graduate = ["7","Bob", "aiv55", "1", "Beginner Track", "3.12.22", "looking-status"];
-  // };
+  var tokenId = await actor_diploma.get_token_by_principal(principalId);
+  graduate_token_id = Number(tokenId);
+  document.getElementById("nft").src = "https://pgsou-iyaaa-aaaal-aaifq-cai.raw.ic0.app/?tokenid=" + graduate_token_id;
 
-  graduate = ["7","Isaac Valadez", "aiv55", "1", "Intermediate Track", "3.12.22", "looking-status"];
+  document.getElementById("full-name-label").innerText = "Name: " + graduate.name;
+  document.getElementById("DSCVR-label").innerText = "DSCVR Username: " + graduate.username;
 
-  graduate_form.classList.remove("hide-this");
-
-  document.getElementById("greeting").innerText = "Welcome back, " + graduate[1] + "!";
-
-  const tokenId = graduate[0];
-  document.getElementById("nft").src = "https://pgsou-iyaaa-aaaal-aaifq-cai.raw.ic0.app/?tokenid=" + tokenId;
-
-  document.getElementById("full-name-label").innerText = "Name: " + graduate[1];
-  //document.getElementById("full-name").value = graduate[1];
-  document.getElementById("DSCVR-label").innerText = "DSCVR Username: " + graduate[2];
-  //document.getElementById("DSCVR").value = graduate[2];
-  console.log("Testing");
-  console.log(graduate);
-  if (graduate[3] == "1") {
+  if (graduate.preference == "1") {
     document.getElementById("full-name").checked = true;
-  } else if (graduate[3] == "2") {
+  } else if (graduate.preference == "2") {
     document.getElementById("DSCVR").checked = true;
   } else {
     document.getElementById("private").checked = true;
   };
-  console.log("Testing 2");
-  console.log(graduate);
-  if (graduate[6] == "looking-status") {
+
+  if (graduate.status == "looking-status") {
     document.getElementById("looking").checked = true;
-  } else if (graduate[6] == "hiring-status") {
+  } else if (graduate.status == "hiring-status") {
     document.getElementById("hiring").checked = true;
   } else {
     document.getElementById("neutral").checked = true;
   };
-  console.log("Testing 3");
-  console.log(graduate);
 
-  // if (principalId == admin) {
-  //   admin_forms.classList.remove("hide-this");
-  //   set_template_button.addEventListener("click", set_template);
-  //   update_graduate_button.addEventListener("click", admin_edit_graduate);
-  // }
+  document.getElementById("greeting").innerText = "Welcome back, " + graduate.name + "!";
+  plug_button.classList.add("hide-this");
+  graduate_form.classList.remove("hide-this");
+
+  if (principalId == admin) {
+    admin_forms.classList.remove("hide-this");
+    set_template_button.addEventListener("click", set_template);
+    update_graduate_button.addEventListener("click", admin_edit_graduate);
+    transfer_nft_button.addEventListener("click", admin_transfer_nft);
+  };
 };
-console.log("Testing 4");
-console.log(graduate);
 
 plug_button.addEventListener("click", plugConnection);
 
 update_button.addEventListener("click", async function(e) {
     e.preventDefault();
+    update_button.disabled = true;
+    update_button.innerText = "loading...";
     document.getElementById("greeting").innerText = "Updating Diploma...";
 
-    graduate[3] = document.querySelector('input[name="preferred-name"]:checked').value;
-    graduate[6] = document.querySelector('input[name="set-status"]:checked').value;
-    console.log("Testing 5");
-    console.log(graduate);
+    var preference = Number(document.querySelector('input[name="preferred-name"]:checked').value);
+    var status = document.querySelector('input[name="set-status"]:checked').value;
     console.log("update button pressed");
 
-    document.getElementById("greeting").innerText = await actor_diploma.update_uri(graduate);
+    var new_greeting = await actor_diploma.update_uri(graduate_token_id, status, preference);
     console.log(graduate);
 
     // Create a timestamp
-    var img_src = "https://pgsou-iyaaa-aaaal-aaifq-cai.raw.ic0.app/?tokenid=" + graduate[0];
+    var img_src = "https://pgsou-iyaaa-aaaal-aaifq-cai.raw.ic0.app/?tokenid=" + graduate_token_id;
+
     console.log(img_src);
+
     const reloadImg = url =>
       fetch(url, { cache: 'reload', mode: 'no-cors' })
       .then(() => document.body.querySelectorAll(`img[src='${url}']`)
@@ -114,21 +110,43 @@ update_button.addEventListener("click", async function(e) {
 
     var reload = await reloadImg(img_src);
 
-    // update_button.addEventListener("click", update_nft(graduate));
+    document.getElementById("greeting").innerText = new_greeting;
+    update_button.disabled = false;
+    update_button.innerText = "Update Diploma!";
 });
 
+const admin_transfer_nft = async () => {
+  var tokenId = Number(document.getElementById("transfer-token").value);
+  const from_prin = document.getElementById("transfer-from").value;
+  const to_prin = document.getElementById("transfer-to").value;
 
+  var send_update = await actor_diploma.transferFrom(from_prin, to_prin, tokenId);
+  console.log("Token transferred (probably)");
+}
 
+const set_template = async () => {
+  const svg_template = document.getElementById("svg-template").value;
 
-// const admin_edit_graduate = async () => {
-//   const edit_graduate_0 = document.getElementById("edit-graduate-0").value.toString();
-//   const edit_graduate_1 = document.getElementById("edit-graduate-1").value.toString();
-//   const edit_graduate_2 = document.getElementById("edit-graduate-2").value.toString();
-//   const edit_graduate_3 = document.getElementById("edit-graduate-3").value.toString();
-//   const edit_graduate_4 = document.getElementById("edit-graduate-4").value.toString();
-//   const edit_graduate_5 = document.getElementById("edit-graduate-5").value.toString();
-//   const edit_graduate_6 = document.getElementById("edit-graduate-6").value.toString();
+  var send_update = await actor_diploma.set_svg_template(svg_template);
+  console.log("SVG Template set (probably)");
+}
 
-//   var send_update = await actor_diploma.update_uri([edit_graduate_0, edit_graduate_1, edit_graduate_2, edit_graduate_3, edit_graduate_4, edit_graduate_5, edit_graduate_6]);
-//   console.log("Graduate set (probably)");
-// }
+const admin_edit_graduate = async () => {
+  var tokenId = Number(document.getElementById("edit-graduate-0").value);
+
+  const graduate = {
+    name: document.getElementById("edit-graduate-1").value,
+    username: document.getElementById("edit-graduate-2").value,
+    preference: Number(document.getElementById("edit-graduate-3").value),
+    track: document.getElementById("edit-graduate-4").value,
+    date: document.getElementById("edit-graduate-5").value.toString(),
+    status: document.getElementById("edit-graduate-6").value,
+    desc1: document.getElementById("edit-graduate-7").value,
+    desc2: document.getElementById("edit-graduate-8").value
+  }
+
+  console.log(graduate);
+
+  var send_update = await actor_diploma.admin_update_graduate(tokenId, graduate);
+  console.log(send_update);
+}

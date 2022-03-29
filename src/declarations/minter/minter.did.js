@@ -46,7 +46,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const DRC721 = IDL.Service({
     'addAdmin' : IDL.Func([IDL.Principal], [Result], []),
-    'admin_update_uri' : IDL.Func([IDL.Nat, Graduate], [IDL.Text], []),
+    'admin_update_graduate' : IDL.Func([IDL.Nat, Graduate], [IDL.Text], []),
     'approve' : IDL.Func([IDL.Principal, TokenId], [], []),
     'balanceOf' : IDL.Func([IDL.Principal], [IDL.Opt(IDL.Nat)], []),
     'getApproved' : IDL.Func([IDL.Nat], [IDL.Principal], []),
@@ -56,6 +56,11 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_diploma' : IDL.Func([IDL.Principal], [IDL.Opt(Graduate)], []),
+    'get_token_by_principal' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(IDL.Nat)],
+        [],
+      ),
     'http_request' : IDL.Func([Request], [Response], ['query']),
     'isApprovedForAll' : IDL.Func(
         [IDL.Principal, IDL.Principal],
@@ -69,11 +74,7 @@ export const idlFactory = ({ IDL }) => {
     'set_svg_template' : IDL.Func([IDL.Text], [], ['oneway']),
     'symbol' : IDL.Func([], [IDL.Text], ['query']),
     'tokenURI' : IDL.Func([TokenId], [IDL.Opt(IDL.Text)], ['query']),
-    'transferFrom' : IDL.Func(
-        [IDL.Principal, IDL.Principal, IDL.Nat],
-        [],
-        ['oneway'],
-      ),
+    'transferFrom' : IDL.Func([IDL.Text, IDL.Text, IDL.Nat], [], ['oneway']),
     'update_uri' : IDL.Func([IDL.Nat, IDL.Text, IDL.Nat], [IDL.Text], []),
   });
   return DRC721;
