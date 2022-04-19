@@ -10,7 +10,7 @@ export interface DRC721 {
   'get_token_by_principal' : (arg_0: Principal) => Promise<[] | [bigint]>,
   'http_request' : (arg_0: Request) => Promise<Response>,
   'isApprovedForAll' : (arg_0: Principal, arg_1: Principal) => Promise<boolean>,
-  'mint' : (arg_0: Principal, arg_1: Graduate) => Promise<bigint>,
+  'mint' : (arg_0: string, arg_1: Graduate) => Promise<bigint>,
   'name' : () => Promise<string>,
   'ownerOf' : (arg_0: TokenId) => Promise<[] | [Principal]>,
   'setApprovalForAll' : (arg_0: Principal, arg_1: boolean) => Promise<

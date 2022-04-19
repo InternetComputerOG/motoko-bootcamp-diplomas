@@ -15,7 +15,7 @@ actor {
   stable var graduateEntries : [(TokenId, Graduate)];
   stable var operatorApprovalsEntries : [(Principal, [Principal])];
   stable var ownersEntries : [(TokenId, Principal)];
-  stable var svg_artwork : Text;
+  stable var svg_art : [var Text];
   stable var tokenApprovalsEntries : [(TokenId, Principal)];
   stable var tokenPk : Nat;
   stable var tokenURIEntries : [(TokenId, Text)]

@@ -11,7 +11,9 @@
   </head>
   <body>
     <main>
-      <img id="nft" src="logo.png" alt="bootcamp_logo" />
+      <a id="nft-anchor" href="#" target="_blank">
+        <img id="nft" src="logo.png" alt="bootcamp_logo" />
+      </a>
       <div id="greeting" class="font-bold Indigo">Welcome! Please login with your Plug wallet.</div>
       <div class="main-view">
           <button id="plug" class="rounded-full shadow-xl Blue" type="submit">Connect Plug Wallet</button>
@@ -55,52 +57,76 @@
         </form>
       </div>
       <div id="admin" class="hide-this">
-        <h1>Set SVG Template</h1>
-        <div class="block w-full">
+        <div>
           <form action="#">
             <label for="svg-template">SVG Template: &nbsp;</label>
-            <textarea id="svg-template" rows="10" cols="100"></textarea>
+            <textarea id="svg-template"></textarea>
           </form>
-          <div class="block w-full">
+          <div>
             <button id="setTemplate" type="submit">Set Template</button>
           </div>
         </div>
         <div id="edit-graduate">
           <form action="#">
             <label for="edit-graduate-0">token: &nbsp;</label>
-            <input type="number" id="edit-graduate-0" name="edit-graduate-0">
+            <input type="number" id="edit-graduate-0" name="edit-graduate-0"><br/>
             <label for="edit-graduate-1">name: &nbsp;</label>
-            <input type="text" id="edit-graduate-1" name="edit-graduate-1">
+            <input type="text" id="edit-graduate-1" name="edit-graduate-1"><br/>
             <label for="edit-graduate-2">username: &nbsp;</label>
-            <input type="text" id="edit-graduate-2" name="edit-graduate-2">
+            <input type="text" id="edit-graduate-2" name="edit-graduate-2"><br/>
             <label for="edit-graduate-3">preference: &nbsp;</label>
-            <input type="number" id="edit-graduate-3" name="edit-graduate-3">
+            <input type="number" id="edit-graduate-3" name="edit-graduate-3"><br/>
             <label for="edit-graduate-4">track: &nbsp;</label>
-            <input type="text" id="edit-graduate-4" name="edit-graduate-4">
+            <input type="text" id="edit-graduate-4" name="edit-graduate-4"><br/>
             <label for="edit-graduate-5">date: &nbsp;</label>
-            <input type="date" id="edit-graduate-5" name="edit-graduate-5">
+            <input type="date" id="edit-graduate-5" name="edit-graduate-5"><br/>
             <label for="edit-graduate-6">status: &nbsp;</label>
-            <input type="text" id="edit-graduate-6" name="edit-graduate-6">
+            <input type="text" id="edit-graduate-6" name="edit-graduate-6"><br/>
             <label for="edit-graduate-7">desc1: &nbsp;</label>
-            <input type="text" id="edit-graduate-7" name="edit-graduate-7">
+            <input type="text" id="edit-graduate-7" name="edit-graduate-7"><br/>
             <label for="edit-graduate-8">desc2: &nbsp;</label>
             <input type="text" id="edit-graduate-8" name="edit-graduate-8">
           </form>
-          <div class="block w-full">
+          <div>
             <button id="update-graduate" type="submit">Update Diploma!</button>
           </div>
         </div>
         <div id="admin-transfer">
           <form action="#">
             <label for="transfer-token">token: &nbsp;</label>
-            <input type="number" id="transfer-token" name="transfer-token">
+            <input type="number" id="transfer-token" name="transfer-token"><br/>
             <label for="transfer-from">from: &nbsp;</label>
-            <input type="text" id="transfer-from" name="transfer-from">
+            <input type="text" id="transfer-from" name="transfer-from"><br/>
             <label for="transfer-to">to: &nbsp;</label>
             <input type="text" id="transfer-to" name="transfer-to">
           </form>
-          <div class="block w-full">
+          <div>
             <button id="transfer-nft" type="submit">Transfer</button>
+          </div>
+        </div>
+        <div id="mint-diploma">
+          <form action="#">
+            <label for="mint-diploma-0">to: &nbsp;</label>
+            <input type="text" id="mint-diploma-0" name="mint-diploma-0"><br/>
+            <label for="mint-diploma-1">name: &nbsp;</label>
+            <input type="text" id="mint-diploma-1" name="mint-diploma-1"><br/>
+            <label for="mint-diploma-2">username: &nbsp;</label>
+            <input type="text" id="mint-diploma-2" name="mint-diploma-2"><br/>
+            <label for="mint-diploma-3">preference: &nbsp;</label>
+            <input type="number" id="mint-diploma-3" name="mint-diploma-3"><br/>
+            <label for="mint-diploma-4">track: &nbsp;</label>
+            <input type="text" id="mint-diploma-4" name="mint-diploma-4"><br/>
+            <label for="mint-diploma-5">date: &nbsp;</label>
+            <input type="date" id="mint-diploma-5" name="mint-diploma-5"><br/>
+            <label for="mint-diploma-6">status: &nbsp;</label>
+            <input type="text" id="mint-diploma-6" name="mint-diploma-6"><br/>
+            <label for="mint-diploma-7">desc1: &nbsp;</label>
+            <input type="text" id="mint-diploma-7" name="mint-diploma-7"><br/>
+            <label for="mint-diploma-8">desc2: &nbsp;</label>
+            <input type="text" id="mint-diploma-8" name="mint-diploma-8">
+          </form>
+          <div>
+            <button id="mint-diploma-btn" type="submit">Mint</button>
           </div>
         </div>
       </div>

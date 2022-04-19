@@ -25,7 +25,7 @@ actor class DRC721(_name : Text, _symbol : Text) {
     private stable var balancesEntries : [(Principal, Nat)] = [];
     private stable var tokenApprovalsEntries : [(T.TokenId, Principal)] = [];
     private stable var operatorApprovalsEntries : [(Principal, [Principal])] = [];
-    private stable var svg_artwork : Text = "This diploma does not exist";
+    private stable var svg_art : [var Text] = Array.thaw(["0","1","2","3","4","5","6"]);
     private stable var graduateEntries : [(T.TokenId, Graduate)] = [];    
 
     private let tokenURIs : HashMap.HashMap<T.TokenId, Text> = HashMap.fromIter<T.TokenId, Text>(tokenURIEntries.vals(), 10, Nat.equal, Hash.hash);
@@ -140,12 +140,12 @@ actor class DRC721(_name : Text, _symbol : Text) {
 //////////////////////////////////////////////////////////////////////////////////////////////
     
 
-    public shared(msg) func mint(to : Principal, graduate : Graduate) : async Nat {
+    public shared(msg) func mint(to : Text, graduate : Graduate) : async Nat {
         assert(_isAdmin(msg.caller));
-        assert(balances.get(to) != ?1);
+        assert(balances.get(Principal.fromText(to)) != ?1);
 
         tokenPk += 1;
-        _mint(to, tokenPk, graduate);
+        _mint(Principal.fromText(to), tokenPk, graduate);
         return tokenPk;
     };
 
@@ -207,8 +207,12 @@ actor class DRC721(_name : Text, _symbol : Text) {
 
     public shared(msg) func set_svg_template(text : Text) {
         assert _isAdmin(msg.caller);
+        var i = 0;
 
-        svg_artwork := text;
+        for (string in Text.split(text, #text "||SPLIT||")) {
+            svg_art[i] := string;
+            i += 1;
+        };
     };
 
     public shared(msg) func get_token_by_principal(principal : Principal) : async ?Nat {
@@ -276,13 +280,13 @@ actor class DRC721(_name : Text, _symbol : Text) {
             holder_title := "The Owner Of This NFT";
         };
 
-        var content : Text = svg_artwork;
-        content := Text.replace(content, #text "||DESC1||", graduate.desc1);
-        content := Text.replace(content, #text "||TITLE||", holder_title);
-        content := Text.replace(content, #text "||DESC2||", graduate.desc2);
-        content := Text.replace(content, #text "||TRACK||", graduate.track);
-        content := Text.replace(content, #text "||DATE||", graduate.date);
-        content := Text.replace(content, #text "||STATUS||", graduate.status);
+        var content : Text = "";
+        content := svg_art[0] # graduate.track;
+        content := content # svg_art[1] # graduate.date;
+        content := content # svg_art[2] # graduate.desc2;
+        content := content # svg_art[3] # graduate.status;
+        content := content # svg_art[4] # holder_title;
+        content := content # svg_art[5] # graduate.desc1 # svg_art[6];
 
         return content;
     };

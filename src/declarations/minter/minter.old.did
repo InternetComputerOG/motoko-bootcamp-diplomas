@@ -67,7 +67,7 @@ service : {
   get_token_by_principal: (principal) -> (opt nat);
   http_request: (Request) -> (Response) query;
   isApprovedForAll: (principal, principal) -> (bool);
-  mint: (principal, Graduate) -> (nat);
+  mint: (text, Graduate) -> (nat);
   name: () -> (text) query;
   ownerOf: (TokenId) -> (opt principal);
   setApprovalForAll: (principal, bool) -> () oneway;
